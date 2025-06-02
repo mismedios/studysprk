@@ -7,19 +7,22 @@ import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp,
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
-import {
-    ArrowUpTrayIcon, DocumentTextIcon, PuzzlePieceIcon, ShareIcon, LightBulbIcon,
-    UserCircleIcon, XMarkIcon, AcademicCapIcon, CheckCircleIcon, QuestionMarkCircleIcon,
-    ChatBubbleLeftRightIcon, PhotoIcon, SparklesIcon, BeakerIcon, DocumentArrowDownIcon
-} from '@heroicons/react/24/outline';
+import { 
+    ArrowUpTrayIcon, DocumentTextIcon, PuzzlePieceIcon, ShareIcon, LightBulbIcon, 
+    UserCircleIcon, XMarkIcon, /* AcademicCapIcon, // No longer used directly here */ CheckCircleIcon, QuestionMarkCircleIcon, 
+    ChatBubbleLeftRightIcon, PhotoIcon, SparklesIcon, BeakerIcon, DocumentArrowDownIcon 
+} from '@heroicons/react/24/outline'; 
 
 // Importar nuestros CSS Modules
-import styles from './App.module.css';
+import styles from './App.module.css'; 
+
+// Importar el logo del cliente
+import emsLogo from './assets/emslogo.png'; // Asegúrate que esta ruta sea correcta
 
 
 // ** IMPORTANTE: Configuración de Firebase **
 // Reemplaza esto con la configuración de TU proyecto Firebase
-const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+const firebaseConfig = {
     apiKey: "AIzaSyB-7LgxAOw1Fh8DQYMSXTs9bWcoIKsgqLw", 
     authDomain: "tudy-spark-ai-app.firebaseapp.com",
     projectId: "study-spark-ai-app",
@@ -27,8 +30,11 @@ const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__f
     messagingSenderId: "728069876548",
     appId: "G-NPWJB081DF"
 };
+// Si usas el entorno de Canvas, la siguiente línea podría obtener la config automáticamente:
+// const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "...", ... };
 
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'study-spark-ai-css-modules';
+
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'study-spark-ems-cliente';
 
 let app;
 let auth;
@@ -68,8 +74,8 @@ const App = () => {
     const [activeFeature, setActiveFeature] = useState(''); 
 
     const [userProfile, setUserProfile] = useState({
-        studyLevel: 'primaria', // Valor por defecto
-        language: 'es', // Valor por defecto
+        studyLevel: 'universidad', 
+        language: 'es',       
     });
     const [showProfileModal, setShowProfileModal] = useState(false);
     const [showShareModal, setShowShareModal] = useState(false);
@@ -79,7 +85,11 @@ const App = () => {
     const fileInputRef = useRef(null);
     const exportContentRef = useRef(null); 
 
+    // ** IMPORTANTE: Clave API de Google AI **
     const GOOGLE_AI_API_KEY = "AIzaSyCW-VsDgiC7e2Q7AYj2B73CKy-1IPODS5s"; // REEMPLAZA ESTO
+    // Si el entorno Canvas la provee:
+    // const GOOGLE_AI_API_KEY = typeof __google_ai_api_key !== 'undefined' ? __google_ai_api_key : "";
+
 
     useEffect(() => {
         if (!auth) {
@@ -109,7 +119,6 @@ const App = () => {
     }, []);
 
     useEffect(() => {
-        // Limpieza de Object URLs
         return () => {
             imagePreviews.forEach(preview => {
                 if (preview.url) { 
@@ -127,9 +136,7 @@ const App = () => {
             if (docSnap.exists()) {
                 setUserProfile(prev => ({ ...prev, ...docSnap.data() }));
             } else {
-                // Si no existe perfil, se guarda el por defecto al interactuar con el modal
-                // Opcionalmente, puedes guardarlo aquí si lo prefieres:
-                // await saveUserProfile(uid, userProfile); 
+                await saveUserProfile(uid, userProfile); 
             }
         } catch (error) {
             console.error("Error cargando perfil de usuario:", error);
@@ -141,7 +148,7 @@ const App = () => {
         const profileRef = doc(db, `artifacts/${appId}/users/${uid}/profile/settings`);
         try {
             await setDoc(profileRef, profileData, { merge: true });
-            setUserProfile(profileData); // Actualiza el estado local
+            setUserProfile(profileData); 
             setShowProfileModal(false);
         } catch (error) {
             console.error("Error guardando perfil de usuario:", error);
@@ -166,8 +173,6 @@ const App = () => {
                 };
             });
             setImagePreviews(newPreviews);
-
-            // Resetear estados relevantes
             setExtractedText('');
             setGeneratedAid(null);
             setStudyAidType('');
@@ -178,7 +183,6 @@ const App = () => {
             setCurrentScore(0);
             setQuizFeedback([]);
         } else {
-            // Si no se seleccionan archivos (ej. se cancela el diálogo)
             setImages([]);
             setImagePreviews([]);
         }
@@ -319,8 +323,8 @@ const App = () => {
         setIsLoadingStudyAid(true);
         setGeneratedAid(null); 
         setExplanationResult(''); 
-        setExamplesResult('');   
-        setActiveFeature('');    
+        setExamplesResult('');   
+        setActiveFeature('');    
         setCurrentScore(0);
         setQuizFeedback([]);
 
@@ -331,7 +335,7 @@ const App = () => {
         if (type === 'summary') {
             prompt = `${basePrompt}Por favor, genera un resumen conciso y claro de este material, destacando los puntos más importantes.`;
         } else if (type === 'quiz') {
-            prompt = `${basePrompt}Crea un quiz interactivo de 10 preguntas de opción múltiple (con 4 opciones cada una, donde solo una es correcta) basado en el material. Para cada pregunta, indica claramente cuál es la opción correcta y proporciona una breve explicación de por qué esa respuesta es correcta.`; // Aumentado a 10 preguntas
+            prompt = `${basePrompt}Crea un quiz interactivo de 10 preguntas de opción múltiple (con 4 opciones cada una, donde solo una es correcta) basado en el material. Para cada pregunta, indica claramente cuál es la opción correcta y proporciona una breve explicación de por qué esa respuesta es correcta.`;
             responseSchema = { 
                 type: "ARRAY", description: "Un array de objetos, cada uno representando una pregunta del quiz.",
                 items: {
@@ -344,7 +348,7 @@ const App = () => {
                 }
             };
         } else if (type === 'faq') {
-            prompt = `${basePrompt}Genera una guía de estudio en formato de Preguntas Frecuentes (FAQ). Crea al menos 10 preguntas clave que un estudiante podría tener sobre este material, junto con sus respuestas concisas y claras.`; // Aumentado a 10 preguntas
+            prompt = `${basePrompt}Genera una guía de estudio en formato de Preguntas Frecuentes (FAQ). Crea al menos 10 preguntas clave que un estudiante podría tener sobre este material, junto con sus respuestas concisas y claras.`;
             responseSchema = {
                 type: "ARRAY",
                 description: "Un array de objetos, cada uno representando una pregunta y su respuesta.",
@@ -533,41 +537,28 @@ const App = () => {
             return;
         }
 
-        if (typeof html2canvas === 'undefined' || typeof jsPDF === 'undefined') {
-            console.error("html2canvas o jsPDF no están cargados. Asegúrate de incluirlos en tu proyecto.");
-            // Considera usar un modal/notificación en lugar de alert
-            // alert("Error: Las librerías para generar PDF no están disponibles. Contacta al administrador.");
-            console.log("Mostrando alerta simulada: Error librerías PDF no disponibles");
-            return;
-        }
-
+        // Las librerías jsPDF y html2canvas ya están importadas al principio del archivo.
         try {
+            input.classList.add(styles.pdfExportArea);
             const canvas = await html2canvas(input, {
                 scale: 2, 
                 useCORS: true, 
                 logging: false, 
-                // Intentar mejorar la calidad de la captura
-                // backgroundColor: null, // Para capturar fondos transparentes si los hubiera (aunque .pdfExportArea tiene fondo blanco)
-                // width: input.scrollWidth, // Capturar todo el ancho
-                // height: input.scrollHeight, // Capturar toda la altura
-                // windowWidth: input.scrollWidth,
-                // windowHeight: input.scrollHeight,
+                backgroundColor: '#ffffff', 
             });
+            input.classList.remove(styles.pdfExportArea); 
             const imgData = canvas.toDataURL('image/png');
-            
             const pdf = new jsPDF({
                 orientation: 'p', 
                 unit: 'px', 
-                format: [canvas.width, canvas.height] // La página PDF tendrá el mismo tamaño que el canvas
+                format: [canvas.width, canvas.height] 
             });
-
             pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
             pdf.save(`StudySpark_Resultados_${studyAidType || activeFeature || 'export'}.pdf`);
-
         } catch (error) {
             console.error("Error al generar PDF:", error);
-            // alert("Hubo un error al generar el PDF.");
-            console.log("Mostrando alerta simulada: Error al generar PDF");
+            alert("Hubo un error al generar el PDF."); 
+            if (input) input.classList.remove(styles.pdfExportArea); 
         }
     };
 
@@ -605,12 +596,11 @@ const App = () => {
     
     const FaqDisplay = ({ data }) => { 
         if (!Array.isArray(data)) return <p className={styles.resultContentError}>Error en datos de FAQ.</p>;
-        if (data.length === 0) return <p className={styles.noResultsText /* Asegúrate que esta clase exista en App.module.css */}>No se generaron preguntas y respuestas.</p>;
+        if (data.length === 0) return <p className={styles.noResultsText}>No se generaron preguntas y respuestas.</p>;
         return (
-            // La clase .faqContainer se aplicará desde .pdfExportArea .faqContainer para el PDF
             <div className={styles.faqContainer}> 
                 {data.map((item, index) => (
-                    <details key={index} className={styles.faqItem} open> {/* Añadido 'open' para que esté abierto por defecto */}
+                    <details key={index} className={styles.faqItem} open> 
                         <summary className={styles.faqQuestion}>
                             {index + 1}. {item.question}
                         </summary>
@@ -622,7 +612,7 @@ const App = () => {
     };
     const MindMapImageDisplay = ({ imageUrl }) => { 
         if (!imageUrl || typeof imageUrl !== 'string' || imageUrl.toLowerCase().startsWith("error") || imageUrl.toLowerCase().startsWith("no se pudo")) {
-            return <p className={styles.resultContentError}>{imageUrl || "No se pudo cargar la imagen del mapa mental."}</p>;
+             return <p className={styles.resultContentError}>{imageUrl || "No se pudo cargar la imagen del mapa mental."}</p>;
         }
         return (
             <div className={styles.mindMapImageContainer}> 
@@ -632,10 +622,20 @@ const App = () => {
         );
     };
 
+    // Componente para el Título con el nuevo logo EMS
+    const AppTitleHeader = () => (
+        <div className={styles.appTitleHeaderContainer}> 
+            <img src={emsLogo} alt="EMS Logo" className={styles.appLogo} />
+            {/* Si quieres añadir texto junto al logo, puedes hacerlo aquí o quitar el h1 de abajo */}
+            {/* <h1 className={styles.mainTitle}>EMS Study Aid</h1> */}
+        </div>
+    );
+
+
     return (
         <div className={styles.appContainer}>
             <header className={styles.appHeader}>
-                <div className={styles.headerInfo}>
+                 <div className={styles.headerInfo}>
                     <div>
                         {userId ? `ID Usuario: ${userId.substring(0,10)}...` : 'Modo Anónimo'}
                     </div>
@@ -647,11 +647,8 @@ const App = () => {
                         <UserCircleIcon className={styles.profileIcon} />
                     </button>
                 </div>
-                <h1 className={styles.mainTitle}>
-                    <AcademicCapIcon className={styles.titleIcon} />
-                    StudySpark AI
-                </h1>
-                <p className={styles.subTitle}>Transforma tus apuntes en herramientas de estudio interactivas con IA.</p>
+                <AppTitleHeader /> 
+                <p className={styles.mainTitle}>Escuela Modelo Sarmiento estudia con IA.</p>
             </header>
 
             {showProfileModal && (
@@ -708,17 +705,17 @@ const App = () => {
 
             <main className={styles.mainContent}>
                 <section className={styles.section}>
-                    <h2 className={styles.sectionTitle}>1. Sube tu Material de Estudio</h2>
+                     <h2 className={styles.sectionTitle}>1. Sube tus Archivos de Estudio</h2>
                     <input
                         type="file"
                         accept="image/png, image/jpeg, image/webp, application/pdf"
-                        multiple
+                        multiple 
                         onChange={handleImageUpload}
                         ref={fileInputRef}
-                        style={{ display: 'none' }}
+                        style={{ display: 'none' }} 
                     />
                     <button onClick={triggerFileInput} className={styles.fileInputButton}>
-                        <ArrowUpTrayIcon />
+                        <ArrowUpTrayIcon /> 
                         <span>Seleccionar Archivos (Imágenes o PDF)</span>
                     </button>
 
@@ -727,23 +724,25 @@ const App = () => {
                             <h3 className={styles.imagePreviewTitle}>
                                 Vista Previa ({imagePreviews.length} {imagePreviews.length === 1 ? "archivo" : "archivos"}):
                             </h3>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center', marginBottom: '1rem' }}>
+                            <div className={styles.previewGrid}> 
                                 {imagePreviews.map((preview, index) => (
-                                    <div key={index} title={preview.name} style={{ textAlign: 'center', maxWidth: '150px', padding: '0.5rem', border: `1px solid #0ea5e9`, borderRadius: '0.375rem' }}>
+                                    <div key={index} title={preview.name} className={styles.previewItem}>
                                         {preview.type === 'image' && preview.url ? (
                                             <img
                                                 src={preview.url}
                                                 alt={`Vista previa ${preview.name}`}
-                                                style={{ maxHeight: '100px', width: 'auto', maxWidth: '100%', objectFit: 'contain', borderRadius: '0.25rem' }}
+                                                className={styles.previewImage}
                                             />
                                         ) : preview.type === 'pdf' ? (
-                                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100px', width: '100%'}}>
-                                                <DocumentTextIcon style={{ height: '3rem', width: '3rem', color: '#38bdf8' }} />
+                                            <div className={styles.previewIconContainer_Pdf}>
+                                                <DocumentTextIcon className={styles.previewPdfIcon} />
                                             </div>
                                         ) : (
-                                            <QuestionMarkCircleIcon style={{ height: '3rem', width: '3rem', color: '#94a3b8' }} />
+                                            <div className={styles.previewIconContainer_Other}>
+                                                <QuestionMarkCircleIcon className={styles.previewOtherIcon} />
+                                            </div>
                                         )}
-                                        <p style={{ fontSize: '0.7rem', color: '#7dd3fc', marginTop: '0.5rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '100%' }}>
+                                        <p className={styles.previewFileName}>
                                             {preview.name}
                                         </p>
                                     </div>
@@ -756,7 +755,7 @@ const App = () => {
                                 style={{ marginTop: '1rem', marginLeft: 'auto', marginRight: 'auto' }}
                             >
                                 {isLoadingText ? (
-                                    <> <div className={styles.spinner} style={{ height: '1.25rem', width: '1.25rem', borderWidth: '2px', marginRight: '0.5rem' }}></div> Extrayendo Texto... </>
+                                    <> <div className={styles.spinnerSmall}></div> Procesando Archivos... </>
                                 ) : (
                                     <> <DocumentTextIcon /> Procesar {images.length > 1 ? `${images.length} Archivos` : 'Archivo'} </>
                                 )}
@@ -795,19 +794,19 @@ const App = () => {
                                 <div className={styles.conceptInputGroup}>
                                     <input type="text" id="conceptInput" value={conceptToExplain} onChange={(e) => setConceptToExplain(e.target.value)} placeholder="Escribe un concepto o término..." className={styles.conceptInput} />
                                     <button onClick={explainKeyConcept} disabled={isLoadingExplanation || !conceptToExplain.trim()} className={`${styles.buttonCyan} ${styles.button}`}>
-                                        {isLoadingExplanation ? <div className={styles.spinner} style={{height: '1rem', width: '1rem', borderWidth: '2px'}}></div> : <SparklesIcon />} <span style={{marginLeft: '0.5rem'}}>Explicar</span>
+                                        {isLoadingExplanation ? <div className={styles.spinnerSmall}></div> : <SparklesIcon />} <span style={{marginLeft: '0.5rem'}}>Explicar</span>
                                     </button>
                                 </div>
                             </div>
                             <button onClick={generatePracticalExamples} disabled={isLoadingExamples} className={`${styles.buttonLime} ${styles.button}`}>
-                                {isLoadingExamples ? <div className={styles.spinner} style={{height: '1.25rem', width: '1.25rem', borderWidth: '2px', marginRight: '0.5rem'}}></div> : <BeakerIcon />} Generar Ejemplos Prácticos
+                                {isLoadingExamples ? <div className={styles.spinnerSmall} style={{marginRight: '0.5rem'}}></div> : <BeakerIcon />} Generar Ejemplos Prácticos
                             </button>
                         </div>
                     </section>
                 )}
                 
                 {(isLoadingStudyAid || isLoadingMindMapImage || isLoadingExplanation || isLoadingExamples ) && 
-                    !((activeFeature === 'explanation' && isLoadingExplanation) || (activeFeature === 'examples' && isLoadingExamples) || (studyAidType && (isLoadingStudyAid || isLoadingMindMapImage))) && (
+                 !((activeFeature === 'explanation' && isLoadingExplanation) || (activeFeature === 'examples' && isLoadingExamples) || (studyAidType && (isLoadingStudyAid || isLoadingMindMapImage))) && (
                     <div className={styles.loadingIndicatorContainer}>
                         <div className={styles.spinner}></div>
                         <p className={styles.loadingText}>
@@ -819,16 +818,14 @@ const App = () => {
                     </div>
                 )}
 
-                {/* SECCIÓN DE RESULTADOS CON CLASE PARA PDF */}
-                {((!isLoadingStudyAid && !isLoadingMindMapImage && generatedAid) || 
-                  (!isLoadingExplanation && explanationResult) || 
-                  (!isLoadingExamples && examplesResult)) && (
+                 {((!isLoadingStudyAid && !isLoadingMindMapImage && generatedAid) || 
+                   (!isLoadingExplanation && explanationResult) || 
+                   (!isLoadingExamples && examplesResult)) && (
                     <section className={styles.section}>
-                        {/* Aplicando la clase .pdfExportArea aquí */}
-                        <div ref={exportContentRef} className={styles.pdfExportArea}> 
+                        <div ref={exportContentRef} className={styles.resultsDisplayContainer}> 
                             {activeFeature === 'explanation' && explanationResult && (
-                                <>
-                                    <h2 className={styles.sectionSubTitle}>✨ Explicación del Concepto: <span style={{color: '#22d3ee'}}>{conceptToExplain}</span></h2>
+                                 <>
+                                    <h2 className={styles.sectionSubTitle}>✨ Explicación del Concepto: <span style={{color: 'var(--client-celeste)'}}>{conceptToExplain}</span></h2>
                                     <div className={styles.resultContent}>
                                         {explanationResult}
                                     </div>
@@ -836,23 +833,23 @@ const App = () => {
                             )}
                             {isLoadingExplanation && activeFeature === 'explanation' && (
                                 <div className={styles.loadingIndicatorContainer} style={{padding: '1.5rem', backgroundColor: 'transparent', boxShadow: 'none'}}>
-                                    <div className={styles.spinner} style={{borderColor: '#06b6d4', height: '2rem', width: '2rem'}}></div>
-                                    <p className={styles.loadingText} style={{fontSize: '1.125rem', color: '#67e8f9'}}>Explicando concepto...</p>
+                                    <div className={styles.spinner} style={{borderColor: 'var(--client-celeste)', height: '2rem', width: '2rem'}}></div>
+                                    <p className={styles.loadingText} style={{fontSize: '1.125rem', color: 'var(--client-celeste)'}}>Explicando concepto...</p>
                                 </div>
                             )}
 
                             {activeFeature === 'examples' && examplesResult && (
-                                <>
+                                 <>
                                     <h2 className={styles.sectionSubTitle}>✨ Ejemplos Prácticos</h2>
                                     <div className={styles.resultContent}>
                                         {examplesResult}
                                     </div>
                                 </>
                             )}
-                            {isLoadingExamples && activeFeature === 'examples' && (
+                             {isLoadingExamples && activeFeature === 'examples' && (
                                 <div className={styles.loadingIndicatorContainer} style={{padding: '1.5rem', backgroundColor: 'transparent', boxShadow: 'none'}}>
-                                    <div className={styles.spinner} style={{borderColor: '#84cc16', height: '2rem', width: '2rem'}}></div>
-                                    <p className={styles.loadingText} style={{fontSize: '1.125rem', color: '#a3e635'}}>Generando ejemplos...</p>
+                                    <div className={styles.spinner} style={{borderColor: 'var(--client-orange)', height: '2rem', width: '2rem'}}></div>
+                                    <p className={styles.loadingText} style={{fontSize: '1.125rem', color: 'var(--client-orange)'}}>Generando ejemplos...</p>
                                 </div>
                             )}
 
@@ -896,7 +893,7 @@ const App = () => {
                                                 </div>
                                             ))}
                                             {quizFeedback.length > 0 && quizFeedback.length === generatedAid.length && (
-                                                <div className={styles.quizCompleted}>
+                                                 <div className={styles.quizCompleted}>
                                                     <h3 className={styles.quizCompletedTitle}>Quiz Completado</h3>
                                                     <p className={styles.quizCompletedScore}>Puntuación: {currentScore} / {generatedAid.length}</p>
                                                     <button
@@ -908,7 +905,7 @@ const App = () => {
                                                 </div>
                                             )}
                                         </div>
-                                    )}
+                                     )}
                                     {studyAidType === 'faq' && <FaqDisplay data={generatedAid} />}
                                     {studyAidType === 'mindmap_description' && <MindMapImageDisplay imageUrl={generatedAid} />}
                                     {typeof generatedAid === 'string' && (generatedAid.toLowerCase().includes("error") || generatedAid.toLowerCase().includes("no se pudo")) && studyAidType !== 'summary' && studyAidType !== 'mindmap_description' && ( <div className={styles.resultContentError}> <p style={{fontWeight: '600', marginBottom: '0.25rem'}}>Respuesta de IA:</p> <p>{generatedAid}</p> </div> )}
@@ -936,7 +933,7 @@ const App = () => {
                     <div className={styles.shareModalContent}>
                         <div className={styles.modalHeader}>
                             <h2 className={styles.shareModalTitle}>Compartir (Simulación)</h2>
-                                <button onClick={() => setShowShareModal(false)} className={styles.modalCloseButton}>
+                             <button onClick={() => setShowShareModal(false)} className={styles.modalCloseButton}>
                                 <XMarkIcon style={{height: '1.5rem', width: '1.5rem'}} />
                             </button>
                         </div>
@@ -946,7 +943,7 @@ const App = () => {
                             <button className={styles.shareModalButtonWhatsapp}>WhatsApp</button>
                             <button className={styles.shareModalButtonSocial}>Redes Sociales</button>
                         </div>
-                        <p className={styles.shareModalFooterText}>Esta es una función simulada.</p>
+                         <p className={styles.shareModalFooterText}>Esta es una función simulada.</p>
                     </div>
                 </div>
             )}

@@ -1,13 +1,19 @@
 /* src/index.css */
 
+/* Asegúrate de importar la fuente Montserrat en tu public/index.html, por ejemplo:
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+*/
+
 body {
   margin: 0;
-  font-family: "Plus Jakarta Sans", "Noto Sans", system-ui, Avenir, Helvetica, Arial, sans-serif;
-  background-color: #0f172a; /* Color de fondo oscuro base (similar a slate-900) */
-  color: #e2e8f0; /* Color de texto claro base (similar a slate-200) */
+  font-family: "Montserrat", system-ui, Avenir, Helvetica, Arial, sans-serif; /* Montserrat como fuente principal */
+  background-color: #33383E; /* Un gris oscuro como fondo base, puedes ajustarlo o usar tu var(--client-bg-dark) si lo defines aquí */
+  color: #F0F0F0; /* Un color de texto claro base */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 *,
@@ -25,13 +31,23 @@ svg {
   max-width: 100%;
 }
 
-/* Puedes añadir aquí estilos muy genéricos para enlaces o botones si lo deseas,
-   pero la mayoría del estilizado se hará en los archivos .module.css */
 a {
-  color: #38bdf8; /* sky-400 */
+  color: #6EB9BC; /* Celeste del cliente para enlaces */
   text-decoration: inherit;
 }
 
 a:hover {
-  color: #0ea5e9; /* sky-500 */
+  color: #58a0a3; /* Un tono ligeramente más oscuro del celeste para hover */
 }
+
+/* Si defines variables CSS globales para tus colores de marca, este sería un buen lugar.
+   Por ejemplo:
+:root {
+  --client-yellow: #e7d253;
+  --client-celeste: #6EB9BC;
+  --client-orange: #E66E3D;
+  --client-gray: #525B65;
+  --client-text-light: #F0F0F0;
+  --client-bg-dark: #33383E;
+}
+*/
