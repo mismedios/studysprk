@@ -35,6 +35,21 @@
     font-size: 0.75rem; /* text-xs */
     color: #7dd3fc; /* text-sky-300 */
   }
+
+  .userInfo { /* Estilo para el email del usuario en el header */
+    font-size: 0.75rem; /* text-xs */
+    color: #94a3b8; /* text-slate-400 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 150px; /* Ajusta según necesidad */
+  }
+  
+  @media (min-width: 640px) {
+    .userInfo {
+      max-width: 200px;
+    }
+  }
   
   .profileButton {
     padding: 0.5rem; /* p-2 */
@@ -43,6 +58,8 @@
     background-color: #1e293b; /* bg-slate-800 */
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
+    border: none; /* Asegurar que no haya borde por defecto */
+    cursor: pointer; /* Indicar que es clickeable */
   }
   .profileButton:hover {
     background-color: #0369a1; /* hover:bg-sky-700 */
@@ -52,6 +69,15 @@
     width: 1.75rem; /* w-7 */
     color: white; /* text-sky-400 */
   }
+
+  .logoutButton { /* Para darle estilo específico si es necesario, hereda de profileButton */
+    composes: profileButton; /* Hereda estilos de profileButton */
+    /* Ejemplo: podrías querer un color diferente para el logout */
+    /* background-color: #ef4444; */ /* bg-red-500 */
+}
+  .logoutButton:hover {
+    /* background-color: #dc2626; */ /* hover:bg-red-600 */
+}
   
   
   .mainTitle {
@@ -347,7 +373,11 @@
     width: 3rem; /* w-12 */
     border-top-width: 4px;
     border-bottom-width: 4px;
+    border-left-width: 4px; /* Añadir para que sea un círculo completo */
+    border-right-width: 4px; /* Añadir para que sea un círculo completo */
+    border-style: solid; /* Asegurar que todos los bordes sean sólidos */
     border-color: #0ea5e9; /* border-sky-500 */
+    border-top-color: transparent !important; /* Hacer un lado transparente para el efecto de giro */
     border-radius: 9999px; /* rounded-full */
     animation: spin 1s linear infinite;
   }
@@ -552,6 +582,9 @@
     padding: 0.25rem; /* p-1 */
     border-radius: 0.375rem; /* rounded-md */
     color: #94a3b8; /* text-slate-400 */
+    background: none; /* Asegurar que no tenga fondo por defecto */
+    border: none; /* Asegurar que no tenga borde por defecto */
+    cursor: pointer; /* Indicar que es clickeable */
   }
   .modalCloseButton:hover {
     background-color: #334155; /* hover:bg-slate-700 */
@@ -676,6 +709,7 @@
     to {
       transform: rotate(360deg);
     }
+  }
     /* === ESTILOS PARA EXPORTACIÓN A PDF === */
 
 .pdfExportArea {
@@ -692,14 +726,11 @@
 .pdfExportArea .sectionSubTitle {
   font-size: 22px;
   font-weight: bold;
-  color: #000000;          /* Título en negro */
+  color: #000000 !important; /* Título en negro, !important para sobreescribir */
   margin-bottom: 25px;
   text-align: center;
   border-bottom: 2px solid #eeeeee; /* Línea separadora */
   padding-bottom: 10px;
-  /* Sobrescribir el color del tema oscuro si es necesario */
-  /* Si .sectionSubTitle tiene un color claro por defecto por el tema oscuro,
-     esta regla lo cambiará a negro para el PDF */
 }
 
 /* Contenedor de FAQs dentro del área de exportación */
@@ -714,23 +745,18 @@
   border: 1px solid #dee2e6; /* Borde sutil */
   border-radius: 5px;
   padding: 15px;
-  background-color: #f8f9fa; /* Fondo claro para cada item */
-   /* Sobrescribir estilos del tema oscuro si es necesario */
-  /* Si .faqItem tiene fondo oscuro y texto claro por defecto: */
-  /* background-color: #f8f9fa !important; */
+  background-color: #f8f9fa !important; /* Fondo claro para cada item */
 }
 
 /* Preguntas de FAQ (<summary>) dentro del área de exportación */
 .pdfExportArea .faqQuestion {
   font-size: 17px;
   font-weight: bold;
-  color: #343a40;          /* Color oscuro para preguntas */
+  color: #343a40 !important; /* Color oscuro para preguntas */
   margin-bottom: 10px;
   line-height: 1.4;
   cursor: default;
   list-style: none; /* Ocultar marcador si no se ve bien en PDF */
-   /* Sobrescribir estilos del tema oscuro */
-  /* color: #343a40 !important; */
 }
 .pdfExportArea .faqItem summary::-webkit-details-marker {
  display: none; /* Ocultar marcador en Chrome/Safari */
@@ -740,78 +766,194 @@
 /* Respuestas de FAQ (<p> dentro de <details>) dentro del área de exportación */
 .pdfExportArea .faqAnswer {
   font-size: 15px;
-  color: #495057;          /* Color de texto para respuestas */
+  color: #495057 !important;          /* Color de texto para respuestas */
   line-height: 1.7;
   padding-left: 15px;
   margin-top: 5px;
   white-space: pre-wrap; /* Mantener saltos de línea y espacios */
-   /* Sobrescribir estilos del tema oscuro */
-  /* color: #495057 !important; */
 }
 
-/* Si tienes otros elementos específicos dentro de .resultContent que necesiten
-   estilos para el PDF (ej. para el resumen, quiz), añádelos aquí usando el
-   selector .pdfExportArea .nombreDeTuClase */
-
 .pdfExportArea .resultContent {
-    background-color: #f8f9fa; /* Fondo claro para el contenido del resumen si es necesario */
+    background-color: #f8f9fa !important; /* Fondo claro para el contenido del resumen si es necesario */
     border: 1px solid #dee2e6;
-    color: #212529; /* Texto oscuro para el resumen */
+    color: #212529 !important; /* Texto oscuro para el resumen */
     padding: 15px;
     font-size: 15px; /* Ajusta según necesidad */
-    /* Sobrescribir cualquier estilo de .resultContent del tema oscuro */
-    /* background-color: #f8f9fa !important; */
-    /* color: #212529 !important; */
 }
 
 /* Estilos para el Quiz dentro del PDF */
 .pdfExportArea .quizItem {
-    background-color: #f8f9fa; /* Fondo claro */
-    border: 1px solid #dee2e6;
-    color: #212529; /* Texto oscuro */
-    /* Sobrescribir estilos del tema oscuro */
-    /* background-color: #f8f9fa !important; */
-    /* border: 1px solid #dee2e6 !important; */
+    background-color: #f8f9fa !important; /* Fondo claro */
+    border: 1px solid #dee2e6 !important;
+    color: #212529 !important; /* Texto oscuro */
 }
 
 .pdfExportArea .quizQuestion {
-    color: #343a40; /* Pregunta oscura */
-    /* color: #343a40 !important; */
+    color: #343a40 !important; /* Pregunta oscura */
 }
 
 .pdfExportArea .quizOptionButton {
-    background-color: #e9ecef; /* Botón de opción claro */
-    color: #495057; /* Texto del botón oscuro */
+    background-color: #e9ecef !important; /* Botón de opción claro */
+    color: #495057 !important; /* Texto del botón oscuro */
     border: 1px solid #ced4da;
-     /* Sobrescribir estilos del tema oscuro */
-    /* background-color: #e9ecef !important; */
-    /* color: #495057 !important; */
 }
 .pdfExportArea .quizOptionButton:hover:not(:disabled) {
-    background-color: #dee2e6;
+    background-color: #dee2e6 !important;
 }
 
 /* Estilos para Quiz Feedback en PDF */
 .pdfExportArea .quizFeedbackCorrect {
-    background-color: #d4edda; /* Verde claro */
-    color: #155724; /* Verde oscuro */
+    background-color: #d4edda !important; /* Verde claro */
+    color: #155724 !important; /* Verde oscuro */
     border: 1px solid #c3e6cb;
 }
 .pdfExportArea .quizFeedbackIncorrect {
-    background-color: #f8d7da; /* Rojo claro */
-    color: #721c24; /* Rojo oscuro */
+    background-color: #f8d7da !important; /* Rojo claro */
+    color: #721c24 !important; /* Rojo oscuro */
     border: 1px solid #f5c6cb;
 }
 
 /* Estilos para MindMapImageDisplay en PDF */
 .pdfExportArea .mindMapImageContainer {
-    background-color: #ffffff; /* Fondo blanco si la imagen tiene transparencia */
+    background-color: #ffffff !important; /* Fondo blanco si la imagen tiene transparencia */
     border: 1px solid #dee2e6; /* Borde opcional */
     padding: 10px; /* Espaciado opcional */
 }
 .pdfExportArea .mindMapImageCaption {
-    color: #6c757d; /* Color de texto para la leyenda */
+    color: #6c757d !important; /* Color de texto para la leyenda */
     font-size: 12px;
 }
-  }
-  
+
+/* === NUEVOS ESTILOS PARA AUTENTICACIÓN === */
+
+.loadingAuthContainer { /* Para el estado "Preparando..." */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+.loadingAuthText { /* Texto para "Preparando..." */
+  margin-top: 1rem;
+  font-size: 1.25rem;
+  color: #bae6fd; /* text-sky-300 */
+}
+
+
+.authPageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
+  width: 100%;
+}
+
+.authFormContainer {
+  background-color: #1e293b; /* bg-slate-800 */
+  padding: 2rem; /* p-8 */
+  border-radius: 0.75rem; /* rounded-xl */
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); /* shadow-2xl */
+  width: 100%;
+  max-width: 400px; /* max-w-md */
+  text-align: center;
+}
+
+.authHeader { /* Para el logo y título en la página de auth */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+/* Reutiliza .mainTitle y .titleIcon para el header de auth si quieres consistencia */
+
+.authFormTitle {
+  font-size: 1.75rem; /* text-3xl */
+  font-weight: 600; /* font-semibold */
+  color: #7dd3fc; /* text-sky-400 */
+  margin-bottom: 1.5rem; /* mb-6 */
+}
+
+.authForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* space-y-4 */
+}
+
+.inputGroup {
+  text-align: left;
+}
+
+.inputGroup label {
+  display: block;
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500; /* font-medium */
+  color: #bae6fd; /* text-sky-300 */
+  margin-bottom: 0.25rem; /* mb-1 */
+}
+
+.authInput {
+  width: 100%;
+  padding: 0.75rem; /* p-3 */
+  background-color: #334155; /* bg-slate-700 */
+  border: 1px solid #475569; /* border-slate-600 */
+  border-radius: 0.375rem; /* rounded-md */
+  font-size: 1rem; /* text-base */
+  color: white;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.authInput:focus {
+  outline: none;
+  border-color: #0ea5e9; /* focus:border-sky-500 */
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.3); /* focus:ring-sky-500/30 */
+}
+
+.authErrorMessage {
+  color: #f87171; /* text-red-400 */
+  font-size: 0.875rem; /* text-sm */
+  margin-top: 0.5rem; /* mt-2 */
+  margin-bottom: 0.5rem;
+}
+
+.authButton { /* Hereda de .buttonPrimary, solo para espaciado si es necesario */
+  composes: buttonPrimary; /* Asegura que herede los estilos base de buttonPrimary */
+  margin-top: 0.5rem; /* mt-2 */
+  width: 100%;
+}
+
+.authToggleLink {
+  margin-top: 1.5rem; /* mt-6 */
+  font-size: 0.875rem; /* text-sm */
+  color: #38bdf8; /* text-sky-400 */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.authToggleLink:hover {
+  text-decoration: underline;
+  color: #7dd3fc; /* text-sky-300 */
+}
+.authToggleLink:disabled {
+  color: #64748b; /* text-slate-500 */
+  cursor: not-allowed;
+}
+
+.spinnerSmall { /* Para botones de auth */
+  composes: spinner; /* Hereda de .spinner */
+  height: 1.25rem; /* h-5 */
+  width: 1.25rem; /* w-5 */
+  border-width: 2px; /* Más delgado */
+  margin-right: 0.5rem; /* Si se usa junto a texto */
+  /* Asegurar que el color del spinner sea visible */
+  border-color: white; /* O un color que contraste con el botón */
+  border-top-color: transparent !important;
+}
+
+.authFooter {
+    composes: appFooter; /* Hereda estilos del footer principal */
+    margin-top: 2rem; /* Opcional: para separar el footer del formulario de login */
+}
