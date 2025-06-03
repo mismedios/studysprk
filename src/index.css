@@ -1,13 +1,53 @@
 /* src/index.css */
 
+/* Importar Montserrat desde Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+:root {
+  --font-primary: 'Montserrat', sans-serif;
+
+  /* Tus nuevos colores */
+  --color-amarillito-logo: #e7d253;
+  --color-celeste-logo: #6EB9BC;
+  --color-naranja: #E66E3D;
+  --color-gris: #525B65;
+
+  /* Colores base de la aplicación */
+  --color-background-base: #3d434a; /* Un tono ligeramente más claro que tu --color-gris para el fondo general */
+  --color-text-base: #f0f0f0; /* Un color de texto claro para buen contraste */
+  --color-text-muted: #a0a0a0; /* Para texto secundario o menos importante */
+
+  --color-primary-action: var(--color-naranja);
+  --color-primary-action-hover: #d35f2a; /* Naranja más oscuro para hover */
+  
+  --color-secondary-action: var(--color-celeste-logo);
+  --color-secondary-action-hover: #5a9fa1; /* Celeste más oscuro para hover */
+
+  --color-accent-yellow: var(--color-amarillito-logo);
+  --color-accent-yellow-hover: #d0b93f; /* Amarillo más oscuro para hover */
+
+  --color-container-bg: var(--color-gris); /* Gris para fondos de secciones/contenedores */
+  --color-container-border: #6a737d; /* Un borde un poco más claro que el fondo del contenedor */
+
+  --color-input-bg: #4a5057; /* Un gris ligeramente diferente para inputs */
+  --color-input-border: var(--color-container-border);
+  --color-input-focus-border: var(--color-celeste-logo);
+  --color-input-text: var(--color-text-base);
+
+  --color-error: #ef4444; /* Rojo para errores, puedes ajustarlo */
+  --color-error-text: #fecaca;
+  --color-success: #22c55e; /* Verde para éxito, puedes ajustarlo */
+  --color-success-text: #d1fae5;
+}
+
 body {
   margin: 0;
-  font-family: "Plus Jakarta Sans", "Noto Sans", system-ui, Avenir, Helvetica, Arial, sans-serif;
-  background-color: #0f172a; /* Color de fondo oscuro base (similar a slate-900) */
-  color: #e2e8f0; /* Color de texto claro base (similar a slate-200) */
+  font-family: var(--font-primary);
+  background-color: var(--color-background-base); 
+  color: var(--color-text-base);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  line-height: 1.5;
+  line-height: 1.6; /* Ajustado para Montserrat */
 }
 
 *,
@@ -25,13 +65,17 @@ svg {
   max-width: 100%;
 }
 
-/* Puedes añadir aquí estilos muy genéricos para enlaces o botones si lo deseas,
-   pero la mayoría del estilizado se hará en los archivos .module.css */
 a {
-  color: #38bdf8; /* sky-400 */
-  text-decoration: inherit;
+  color: var(--color-celeste-logo);
+  text-decoration: none; /* Quitar subrayado por defecto */
 }
 
 a:hover {
-  color: #0ea5e9; /* sky-500 */
+  color: var(--color-secondary-action-hover);
+  text-decoration: underline; /* Subrayado en hover */
+}
+
+/* Estilos base para botones, si quieres unificar un poco más */
+button {
+  font-family: var(--font-primary);
 }
